@@ -3,26 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <title>Esame</title>
+
 <style>
 body {
-  margin:0;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  background:#000;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #000;
 }
 
-canvas { display:block; }
+canvas {
+  display: block;
+}
 
+/* Botão Start */
 button {
-  margin-bottom:15px;
-  padding:10px 20px;
-  font-size:16px;
-  cursor:pointer;
+  margin-bottom: 20px;
+  padding: 14px 35px;
+  border: none;
+  border-radius: 999px; /* pontas arredondadas */
+  background: #1f4fa8;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(31, 79, 168, 0.6);
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: #2b63cc;
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(43, 99, 204, 0.9);
+}
+
+button:active {
+  transform: translateY(0);
 }
 </style>
+
 </head>
 <body>
 
@@ -47,21 +69,25 @@ let particles = [];
 let neutrons = [];
 const PARTICLE_COUNT = 100;
 
-// Partículas da explosão
 class Particle {
   constructor(x,y){
-    this.x=x; this.y=y; this.life=60;
-    const a = Math.random()*2*Math.PI;
-    const s = Math.random()*4+2;
+    this.x=x;
+    this.y=y;
+    this.life=60;
+
+    const a=Math.random()*2*Math.PI;
+    const s=Math.random()*4+2;
+
     this.dx=Math.cos(a)*s;
     this.dy=Math.sin(a)*s;
-    this.size = 3 + Math.random()*2;
+    this.size=3+Math.random()*2;
   }
+
   update(){
     this.x+=this.dx;
     this.y+=this.dy;
     this.life--;
-  
+
     ctx.fillStyle=`rgba(255,140,0,${this.life/60})`;
     ctx.beginPath();
     ctx.shadowColor='orange';
@@ -73,7 +99,6 @@ class Particle {
   }
 }
 
-// Nêutron com alvo
 class Neutron {
   constructor(x,y,target,speed=10){
     this.x=x;
@@ -86,23 +111,22 @@ class Neutron {
   update(){
     if(this.hit || !this.target || this.target.exploded) return false;
 
-    const dx = this.target.x - this.x;
-    const dy = this.target.y - this.y;
-    const dist = Math.sqrt(dx*dx + dy*dy);
+    const dx=this.target.x-this.x;
+    const dy=this.target.y-this.y;
+    const dist=Math.sqrt(dx*dx+dy*dy);
 
-    if(dist < 25){
+    if(dist<25){
       explode(this.target);
       this.hit=true;
       return false;
     }
 
-    const vx = (dx/dist)*this.speed;
-    const vy = (dy/dist)*this.speed;
+    const vx=(dx/dist)*this.speed;
+    const vy=(dy/dist)*this.speed;
 
-    this.x += vx;
-    this.y += vy;
+    this.x+=vx;
+    this.y+=vy;
 
-    // trajetória
     ctx.strokeStyle='rgba(255,255,255,0.3)';
     ctx.lineWidth=2;
     ctx.beginPath();
@@ -110,7 +134,6 @@ class Neutron {
     ctx.lineTo(this.x,this.y);
     ctx.stroke();
 
-    // desenho
     ctx.fillStyle='white';
     ctx.shadowColor='white';
     ctx.shadowBlur=12;
@@ -122,36 +145,35 @@ class Neutron {
   }
 }
 
-// Explosão
 function explode(n){
   if(n.exploded) return;
-  n.exploded = true;
+
+  n.exploded=true;
 
   for(let i=0;i<PARTICLE_COUNT;i++){
     particles.push(new Particle(n.x,n.y));
   }
 
-  if(n === nuclei[0]){
+  if(n===nuclei[0]){
     setTimeout(()=>{
       neutrons.push(new Neutron(n.x,n.y,nuclei[1]));
       neutrons.push(new Neutron(n.x,n.y,nuclei[2]));
-    }, 50);
+    },50);
   }
 
   if(nuclei.every(n=>n.exploded)){
-    setTimeout(reset, 3000);
+    setTimeout(reset,3000);
   }
 }
 
-// Reset
 function reset(){
   nuclei.forEach(n=>n.exploded=false);
   particles=[];
   neutrons=[];
+
   neutrons.push(new Neutron(0,cy,nuclei[0],6));
 }
 
-// Loop
 function draw(){
   if(!running) return;
 
@@ -160,35 +182,35 @@ function draw(){
 
   nuclei.forEach(n=>{
     if(!n.exploded){
+
       ctx.fillStyle='yellow';
       ctx.shadowColor='yellow';
       ctx.shadowBlur=20;
+
       ctx.beginPath();
       ctx.arc(n.x,n.y,25,0,2*Math.PI);
       ctx.fill();
 
       ctx.shadowBlur=0;
+
       ctx.fillStyle='black';
       ctx.font='bold 14px Arial';
       ctx.textAlign='center';
       ctx.textBaseline='middle';
-      ctx.fillText('P-239', n.x, n.y);
+      ctx.fillText('P-239',n.x,n.y);
     }
   });
 
-  neutrons = neutrons.filter(n=>n.update());
-  particles = particles.filter(p=>p.update());
+  neutrons=neutrons.filter(n=>n.update());
+  particles=particles.filter(p=>p.update());
+
   requestAnimationFrame(draw);
 }
 
-// play
-document.getElementById("playBtn").addEventListener("click", (e) => {
+document.getElementById("playBtn").addEventListener("click",(e)=>{
   if(!running){
-    running = true;
-
-    // nasconde il bottone
-    e.target.style.display = "none";
-
+    running=true;
+    e.target.style.display="none";
     reset();
     draw();
   }
