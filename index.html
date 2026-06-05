@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -13,6 +14,15 @@ body {
   align-items: center;
   height: 100vh;
   background: #000;
+  overflow: hidden;
+}
+
+h1 {
+  color: white;
+  font-family: Arial, sans-serif;
+  font-size: 42px;
+  margin-bottom: 25px;
+  text-shadow: 0 0 15px rgba(255,255,255,0.8);
 }
 
 canvas {
@@ -24,7 +34,7 @@ button {
   margin-bottom: 20px;
   padding: 14px 35px;
   border: none;
-  border-radius: 999px; /* pontas arredondadas */
+  border-radius: 999px;
   background: #1f4fa8;
   color: white;
   font-size: 18px;
@@ -43,14 +53,29 @@ button:hover {
 button:active {
   transform: translateY(0);
 }
+
+/* Nome no canto inferior esquerdo */
+#author {
+  position: fixed;
+  bottom: 15px;
+  left: 15px;
+  color: white;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  opacity: 0.85;
+}
 </style>
 
 </head>
 <body>
 
+<h1 id="title">Esame 3^B</h1>
+
 <button id="playBtn">Start</button>
 
 <canvas id="canvas" width="900" height="500"></canvas>
+
+<div id="author">Erick Comicholi Rosa</div>
 
 <script>
 const canvas = document.getElementById("canvas");
@@ -197,7 +222,7 @@ function draw(){
       ctx.font='bold 14px Arial';
       ctx.textAlign='center';
       ctx.textBaseline='middle';
-      ctx.fillText('P-239',n.x,n.y);
+      ctx.fillText('Pu-239',n.x,n.y);
     }
   });
 
@@ -210,7 +235,10 @@ function draw(){
 document.getElementById("playBtn").addEventListener("click",(e)=>{
   if(!running){
     running=true;
-    e.target.style.display="none";
+
+    document.getElementById("title").style.display = "none";
+    e.target.style.display = "none";
+
     reset();
     draw();
   }
@@ -219,3 +247,4 @@ document.getElementById("playBtn").addEventListener("click",(e)=>{
 
 </body>
 </html>
+```
